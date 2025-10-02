@@ -2,7 +2,6 @@
     "datasets": {
         "openneuro_ds004514-1.1.2": {
             "ID": "openneuro_ds004514-1.1.2",
-            "density": "sparse",
             "dataset_title": "Simultaneous EEG and fNIRS recordings for semantic decoding of imagined animals and tools",
             "paradigm_purpose": "silent naming task and three sensory-based imagery tasks using visual, auditory, and tactile perception",
             "modalities": "fNIRS, EEG",
@@ -28,7 +27,6 @@
 
         "nitrc_snirf_stroke": {
             "ID": "nitrc_snirf_stroke",
-            "density": "unknown",
             "dataset_title": "A Multiple Session Dataset of NIRS Recordings From Stroke Patients Controlling Brain-Computer Interface",
             "paradigm_purpose": "imagined hand movements",
             "modalities": "fNIRS",
@@ -54,7 +52,6 @@
 
         "left3s_task-FRESHMOTOR_nirs": {
             "ID": "FRESH Motor Dataset - left3s_task-FRESHMOTOR_nirs",
-            "density": "dense",
             "dataset_title": "Organizing electrophysiological data into the BIDS format and facilitating their analysis",
             "paradigm_purpose": "-",
             "modalities": "fNIRS",
@@ -80,7 +77,6 @@
 
         "right3s_task-FRESHMOTOR_nirs": {
             "ID": "FRESH Motor Dataset - right3s_task-FRESHMOTOR_nirs",
-            "density": "dense",
             "dataset_title": "Organizing electrophysiological data into the BIDS format and facilitating their analysis",
             "paradigm_purpose": "-",
             "modalities": "fNIRS",
@@ -106,7 +102,6 @@
 
         "BallSqueezingHD_Gao2023": {
             "ID": "BallSqueezingHD_Gao2023",
-            "density": "dense",
             "dataset_title": "Short-separation regression incorporated diffuse optical tomography image reconstruction modeling for high-density functional near-infrared spectroscopy",
             "paradigm_purpose": "BallSqueezing",
             "modalities": "fNIRS",
@@ -133,7 +128,6 @@
 
         "nirs_Defenderfer_2019": {
             "ID": "nirs_Defenderfer_2019",
-            "density": "dense",
             "dataset_title": "Investigating the role of temporal lobe activation in speech perception accuracy with normal hearing adults: An event-related fNIRS study",
             "paradigm_purpose": "Event-related vocoding/background noise study",
             "modalities": "fNIRS",
@@ -160,7 +154,6 @@
 
         "mendeley_shixian_stroke_control": {
             "ID": "mendeley_shixian_stroke_control",
-            "density": "dense",
             "dataset_title": "Investigating the role of temporal lobe activation in speech perception accuracy with normal hearing adults: An event-related fNIRS study",
             "paradigm_purpose": "left and right hand movement data, stroke patients and normal subjects ",
             "modalities": "fNIRS",
@@ -172,7 +165,7 @@
             "data_link": "https://data.mendeley.com/datasets/jhv73gj2d2/1",
             "publication": "-",
             "aquisition_system": "-",
-            "format": "nirs",
+            "format": "unarchieved files",
             "additional_details": "Data are splited in .z01 files. Could not be loaded unarchived and loaded",
 
             "_comment": "Default values below will be overridden if pipeline succeeds",
@@ -182,7 +175,57 @@
             "wavelength_names": "-",
             "trial_types": "-",
             "n_trials": "-"
-        }
+        },
+
+        "openneuro_driving_risk": {
+            "ID": "openneuro_driving_risk",
+            "dataset_title": "Prefrontal cortex activity in fourteen types of highly automated driving scenarios",
+            "paradigm_purpose": "lprefrontal cortex activity between low-risk and high-risk episodes by quantifying the risk of driving scenario",
+            "modalities": "fNIRS",
+            "n_subjects": 20,
+            "head_coverage": "prefrontal",
+            "organization": "-",
+            "authors": "Zhang, X.",
+            "upload_date": "17.02.2024",
+            "data_link": "https://openneuro.org/datasets/ds004973/versions/1.0.1",
+            "publication": "https://www.nature.com/articles/s41597-024-03353-6",
+            "aquisition_system": "-",
+            "format": "snirf",
+            "additional_details": "no channels found in snirf file. Wavelengths are 757 and 844 nm.",
+
+            "_comment": "Default values below will be overridden if pipeline succeeds",
+            "n_channels": "_8",
+            "total_hrs": "-",
+            "landmarks": "-",
+            "wavelength_names": "-",
+            "trial_types": "-",
+            "n_trials": "-"
+        },
+        
+        "openneuro_spatial_attention_decoding": {
+            "ID": "openneuro_spatial_attention_decoding",
+            "dataset_title": "Spatial Attention Decoding using fNIRS During Complex Scene Analysis",
+            "paradigm_purpose": "Spatial Attention Decoding, Auditory Neuroscience",
+            "modalities": "fNIRS",
+            "n_subjects": 12,
+            "head_coverage": "-",
+            "organization": "BIFOLD/IBS",
+            "authors": "Ning, M.",
+            "upload_date": "11.07.2025",
+            "data_link": "https://openneuro.org/datasets/ds004830/versions/1.0.1",
+            "publication": "https://www.frontiersin.org/journals/human-neuroscience/articles/10.3389/fnhum.2024.1329086/full",
+            "aquisition_system": "-",
+            "format": "snirf",
+            "additional_details": "-",
+
+            "_comment": "Default values below will be overridden if pipeline succeeds",
+            "n_channels": "-",
+            "total_hrs": "-",
+            "landmarks": "No land marks available",
+            "wavelength_names": "-",
+            "trial_types": "-",
+            "n_trials": "-"
+        }        
 
     }
 }

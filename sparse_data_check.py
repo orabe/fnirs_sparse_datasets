@@ -1,4 +1,4 @@
-# %%
+
 import pyvista as pv
 pv.set_jupyter_backend('static')
 
@@ -38,20 +38,8 @@ xrutils.unit_stripping_is_error()
 
 # xr.set_options(display_expand_data=False);
 
-# %%
+
 def load_dataset_config(dataset_name, config_path="datasets/datasets_info.json"):
-    """Load dataset configuration from the main datasets.json file.
-    
-    Parameters:
-    -----------
-    dataset_name : str
-        Name of the dataset
-        
-    Returns:
-    --------
-    dict : Dataset configuration including snirf_path
-    """
-    
     if not os.path.exists(config_path):
         raise FileNotFoundError(f"Datasets configuration file not found: {config_path}")
     
@@ -76,37 +64,8 @@ def list_available_datasets(config_path="datasets/datasets_info.json"):
     
     return list(all_datasets['datasets'].keys())
 
-# %%
-JSON_PATH = "datasets/datasets_info.json"
-LOG_FILE_PATH = "datasets/dataset_analysis_log.csv"
-
-# TO be configured for each dataset
-DATASET_NAME = "mendeley_shixian_stroke_control" # could be different from snirf file name
-SNIRF_PATH = os.path.join("datasets/mendeley_shixian_stroke_control/jhv73gj2d2-1/01.001")
-
-try:
-    DATASET_INFO = load_dataset_config(DATASET_NAME, JSON_PATH)
-    snirf_path = SNIRF_PATH
-    print(f"Loaded configuration for dataset: {DATASET_INFO['ID']}")
-except (FileNotFoundError, KeyError) as e:
-    print(f"Error: {e}")
-    print("Available datasets:")
-    for dataset in list_available_datasets("datasets/datasets_info.json"):
-        print(f"  - {dataset}")
-    exit(1)
-
-
-# %%
-HEAD_MODEL = "colin27" # "icbm152"
-FORWARD_MODEL = "NIRFASTER" # "MCX"
-VISUALIZE = False  # Set to False to skip all visualizations
-SAVE_FIG = False
-IMAGE_RECON = False
-# %%
 def calculate_total_hours(rec):
-    """Calculate total recording time in hours from the data."""
     try:
-        # Get the time duration from the amplitude data
         time_data = rec['amp'].time.values
         total_seconds = float(time_data[-1] - time_data[0])
         total_hours = total_seconds / 3600
@@ -116,7 +75,6 @@ def calculate_total_hours(rec):
         return 0.0
 
 def get_n_channels(rec):
-    """Extract number of channels from the recording."""
     try:
         return int(rec['amp'].channel.size)
     except Exception as e:
@@ -124,7 +82,6 @@ def get_n_channels(rec):
         return 0
 
 def get_landmark_names(geo3d):
-    """Extract landmark names from geometry data."""
     try:
         # valid landmarks: Nz, Iz, LPA, RPA which are obtained from head.landmarks.label
         # Get unique landmark labels
@@ -137,10 +94,8 @@ def get_landmark_names(geo3d):
         return 'Not available'
 
 def get_wavelength_info(rec):
-    """Extract wavelength information from the recording."""
     try:
         wavelengths = rec['amp'].wavelength.values
-        # Get unique wavelengths
         unique_wavelengths = sorted(list(set(wavelengths)))
         wavelength_names = ', '.join([f"{w}nm" for w in unique_wavelengths])
         return wavelength_names
@@ -149,12 +104,9 @@ def get_wavelength_info(rec):
         return 'Not available'
 
 def get_trial_types_info(rec):
-    """Extract trial types and their counts from stimulus data."""
     try:
-        # Get trial type counts
         event_stimulus = rec.stim.groupby("trial_type")[["onset"]].count()
         
-        # Format trial types with counts
         trial_info = []
         for trial_type, count in event_stimulus['onset'].items():
             trial_info.append(f"{trial_type}({count})")
@@ -167,18 +119,16 @@ def get_trial_types_info(rec):
         return 'Not available'
 
 def get_n_trials(rec):
-    """Extract total number of trials from stimulus data."""
     try:
-        # Get total trial count
         total_trials = len(rec.stim)
         return total_trials
     except Exception as e:
         print(f"Warning: Could not extract number of trials: {e}")
         return 0
 
-def log_dataset_info(dataset_info, rec, geo3d, log_file_path=LOG_FILE_PATH):
+def log_dataset_info(dataset_info, rec, geo3d, log_file_path="datasets/dataset_analysis_log.csv"):
     """Log dataset information to CSV file.
-    If data with the same dataset_name exists, it will be overridden.
+        If data with the same ID exists, it will be overridden.
     
     Parameters:
     -----------
@@ -212,21 +162,26 @@ def log_dataset_info(dataset_info, rec, geo3d, log_file_path=LOG_FILE_PATH):
     # Prepare the log entry
     log_entry = {
         'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        'dataset_name': dataset_info['ID'],
+        'ID': dataset_info['ID'],
+        'dataset_title': dataset_info['dataset_title'],
         'paradigm_purpose': dataset_info['paradigm_purpose'],
         'modalities': dataset_info['modalities'],
         'n_subjects': dataset_info['n_subjects'],
         'n_channels': n_channels,
         'total_hrs': total_hrs,
         'head_coverage': dataset_info['head_coverage'],
+        'organization': dataset_info['organization'],
+        'authors': dataset_info['authors'],
+        'upload_date': dataset_info['upload_date'],
+        'data_link': dataset_info['data_link'],
+        'publication': dataset_info['publication'],
+        'aquisition_system': dataset_info['aquisition_system'],
+        'format': dataset_info['format'],
+        'additional_details': dataset_info['additional_details'],
         'landmarks': landmarks,
         'wavelength_names': wavelength_names,
         'trial_types': trial_types,
-        'n_trials': n_trials,
-        'authors': dataset_info['authors'],
-        'data_link': dataset_info['data_link'],
-        'publication': dataset_info['publication'],
-        'additional_details': dataset_info['additional_details']
+        'n_trials': n_trials
     }
     
     # Check if file exists and read existing data
@@ -235,11 +190,11 @@ def log_dataset_info(dataset_info, rec, geo3d, log_file_path=LOG_FILE_PATH):
     dataset_updated = False
     
     if file_exists:
-        # Read existing data and filter out entries with the same dataset_name
+        # Read existing data and filter out entries with the same ID
         with open(log_file_path, 'r', newline='', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
-                if row['dataset_name'] != dataset_info['ID']:
+                if row['ID'] != dataset_info['ID']:
                     existing_data.append(row)
                 else:
                     dataset_updated = True
@@ -274,16 +229,38 @@ def log_dataset_info(dataset_info, rec, geo3d, log_file_path=LOG_FILE_PATH):
             print(f"{key}: {value}")
     print("===================================\n")
 
-# %%
+
+HEAD_MODEL = "colin27" # "icbm152"
+FORWARD_MODEL = "NIRFASTER" # "MCX"
+VISUALIZE = False  # Set to False to skip all visualizations
+SAVE_FIG = False
+IMAGE_RECON = False
+
+JSON_PATH = "datasets/datasets_info.json"
+LOG_FILE_PATH = "datasets/dataset_analysis_log.csv"
+
+# TO be configured for each dataset
+dataset_name = "openneuro_spatial_attention_decoding" # could be different from snirf file name
+snirf_path = os.path.join("datasets/openneuro_spatial_attention_decoding/sub-08_task-03_nirs.snirf")
+
+
+try:
+    DATASET_INFO = load_dataset_config(dataset_name, JSON_PATH)
+    snirf_path = snirf_path
+    print(f"Loaded configuration for dataset: {DATASET_INFO['ID']}")
+except (FileNotFoundError, KeyError) as e:
+    print(f"Error: {e}")
+    print("Available datasets:")
+    for dataset in list_available_datasets("datasets/datasets_info.json"):
+        print(f"  - {dataset}")
+    exit(1)
+
+
 # Load the data
 try:
     recordings = cedalion.io.read_snirf(snirf_path)
     rec = recordings[0]
-
-    # Get geometry data for landmark information
     geo3d = rec.geo3d
-
-    # Log dataset information
     log_dataset_info(DATASET_INFO, rec, geo3d)
         
 except Exception as e:
@@ -295,19 +272,20 @@ except Exception as e:
     exit(1)
 
 
-# %%
+
 # check the wavelength
 print(rec['amp'].wavelength)
 rec['amp'] = rec['amp'].assign_coords(wavelength=[760, 850])
 
 meas_list = rec._measurement_lists['amp'].copy()
-wavelength_mapping = {785: 760, 830: 850}
+# wavelength_mapping = {785: 760, 830: 850}
+wavelength_mapping = {757: 760, 844: 850}
 meas_list['wavelength'] = meas_list['wavelength'].map(wavelength_mapping)
 rec._measurement_lists['amp'] = meas_list
 
 print(rec._measurement_lists['amp'].wavelength.unique())
 
-# %%
+
 # check the landmarks
 geo3d = rec.geo3d
 
@@ -326,11 +304,9 @@ new_labels[subject_nasion_mask] = 'Nz'
 geo3d = geo3d.assign_coords(label=new_labels)
 print(geo3d['label'].data)
 
-# %%
 # Vizualize the montage
 fig = cedalion.plots.plot_montage3D(rec["amp"], geo3d)
     
-# %%
 print(rec['amp'].source.size, rec['amp'].detector.size, rec['amp'].channel.size )
 print(rec['amp'].channel)
 
@@ -338,14 +314,14 @@ for i, (type, x) in enumerate(geo3d.groupby("type")):
     print(type)
     print(x)
 
-# %%
+
 # check event stimulus
 event_stimulus = rec.stim.groupby("trial_type")[["onset"]].count()
 print(event_stimulus)
 
 trial_types = rec.stim.trial_type.unique().tolist()
 print(trial_types)
-# %%
+    
 # Preprocessing
 # 1. Convert to optical density
 # convert to optical density
@@ -362,7 +338,7 @@ rec["od_freqfiltered"] = rec["od_wavelet"].cd.freq_filter(
     fmin=0.01, fmax=0.5, butter_order=4
 )
 
-# %%
+
 # Block averaging (in optical density)
 epochs = rec["od_freqfiltered"].cd.to_epochs(
     rec.stim,  # stimulus dataframe
@@ -404,9 +380,9 @@ if VISUALIZE:
     p.tight_layout()
     p.show()
 
-# %%
+
 if IMAGE_RECON:
-    # %%
+    
     # Head modeling and co-registration
     # 1. Load segmentation, masks and landmarks
     if HEAD_MODEL == "colin27":
@@ -445,7 +421,7 @@ if IMAGE_RECON:
         plt.show()
 
 
-    # %%
+    
     # Forward model
     # 1. Create forward model (simulate light propagation in tissue)
     fwm = cedalion.imagereco.forward_model.ForwardModel(head, geo3d_snapped_ijk, meas_list)
@@ -462,7 +438,7 @@ if IMAGE_RECON:
     else:
         raise ValueError(f"Unknown FORWARD_MODEL: {FORWARD_MODEL}")
 
-    # %%
+    
     ## Plot fluence
     # # for plotting use a geo3d without the landmarks
     # geo3d_plot = geo3d_snapped_ijk[geo3d_snapped_ijk.type != cdc.PointType.LANDMARK]
@@ -499,7 +475,7 @@ if IMAGE_RECON:
 
         plt.show()
 
-    # %%
+    
     # Calcualte sensitivity matrices
     sensitivity_fname = tmp_dir_path / "sensitivity.h5"
     fwm.compute_sensitivity(fluence_fname, sensitivity_fname)
@@ -519,7 +495,7 @@ if IMAGE_RECON:
         plotter.plt.show()
 
 
-    # %%
+    
     # Inverse sensitivity matrix
 
     # Compute stacked sensitivity matrix
@@ -531,12 +507,12 @@ if IMAGE_RECON:
     # Apply inverse matrix to data
     dC_brain, dC_scalp = fw.apply_inv_sensitivity(blockaverage, B)
 
-    # %%
+    
     # helper function to display gifs in rendered notbooks
     def display_image(fname : str):
         display(Image(data=open(fname,'rb').read(), format='png'))
 
-    # %%
+    
     # Plot results on brain and scalp
     # Channel space
     if VISUALIZE:
@@ -562,7 +538,7 @@ if IMAGE_RECON:
         )
         display_image(f"{filename_scalp}.gif")
 
-    # %% 
+     
     # Image space plot
     # Single-View Animations of Activitations on the Brain
     if VISUALIZE:
@@ -594,7 +570,7 @@ if IMAGE_RECON:
             wdw_size = (1024, 768)
         )
 
-    # %%
+    
     #  Select a single time point and plot activity as a still image at that time
     if VISUALIZE:
         X_ts_plot = X_ts.sel(time=4, method="nearest") # note: sel does not accept quantified units
@@ -619,7 +595,7 @@ if IMAGE_RECON:
 
         display_image(f"{filename_view}.png")
 
-    # %%
+    
     # Multi-View Animations of Activitations on the Brain
     if VISUALIZE:
         from cedalion.plots import image_recon_multi_view
@@ -652,7 +628,7 @@ if IMAGE_RECON:
         )
         display_image(f"{filename_multiview}.gif")
 
-    # %%
+    
     # Parcel Space Plot
     # subtract baseline
     baseline =  dC_brain.isel(reltime=0) # first sample along reltime dimension
@@ -711,7 +687,7 @@ if IMAGE_RECON:
         plt.show()
 
 
-    # %%
+    
     # Plot averaged time traces in each parcel for the event conditions
     if VISUALIZE:
         f,ax = p.subplots(2,6, figsize=(20,5))
@@ -745,5 +721,5 @@ if IMAGE_RECON:
     temporary_directory.cleanup()
     
         
-# %%
+
 print("---DONE---")
