@@ -1,0 +1,54 @@
+{
+    "datasets": {
+        "openneuro_ds004514-1.1.2": {
+        "ID": "openneuro_ds004514-1.1.2",
+        "dataset_title": "Simultaneous EEG and fNIRS recordings for semantic decoding of imagined animals and tools",
+        "paradigm_purpose": "silent naming task and three sensory-based imagery tasks using visual, auditory, and tactile perception",
+        "modalities": "fNIRS, EEG",
+        "n_subjects": 12,
+        "head_coverage": "frontal, temporal,",
+        "organization": "OpenNeuro",
+        "authors": "Milan Rybar et. al.",
+        "upload_date": "2025-04-03",
+        "data_link": "https://openneuro.org/datasets/ds004514/versions/1.1.2",
+        "publication": "https://www.nature.com/articles/s41598-024-79309-y",
+        "aquisition_system": "NIRx NIRScoutXP",
+        "additional_details": "-",
+        
+        "_comment": "Default values below will be overridden if pipeline succeeds",
+        "n_channels": "Unknown",
+        "total_hrs": "Unknown",
+        "landmarks": "Unknown",
+        "wavelength_names": "Unknown",
+        "trial_types": "Unknown",
+        "n_trials": "Unknown",
+        "format": "snirf"
+        }, 
+
+        "nitrc_snirf_stroke": {
+            "ID": "nitrc_snirf_stroke",
+            "dataset_title": "A Multiple Session Dataset of NIRS Recordings From Stroke Patients Controlling Brain-Computer Interface",
+            "paradigm_purpose": "imagined hand movements",
+            "modalities": "fNIRS",
+            "n_subjects": 17,
+            "head_coverage": "frontal, temporal,",
+            "organization": "Institute of Higher Nervous Activity and Neurophysiology",
+            "authors": "Isaev M. R et. al.",
+            "upload_date": "2024-28-03",
+            "data_link": "https://www.nitrc.org/projects/nirs_stroke",
+            "publication": "https://www.nature.com/articles/s41597-024-04012-6",
+            "aquisition_system": "NIRScout",
+            "additional_details": "-",
+
+            "_comment": "Default values below will be overridden if pipeline succeeds",
+            "n_channels": "_28",
+            "total_hrs": "_50.0",
+            "landmarks": "NOT AVAILABLE",
+            "wavelength_names": "_760/780",
+            "trial_types": "Unknown",
+            "n_trials": "237",
+            "format": "MATLAB, snirf"
+        }
+
+    }
+}
